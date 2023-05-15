@@ -15,6 +15,7 @@
         "DOWN_LEFT": 3
     };
     let direction = getRandomDirection();
+    let directionChangeDisabled = false;
 
     /**
      * The logo should move in a random direction of
@@ -149,8 +150,7 @@
                 coords.top -= fallback;
             }
 
-            direction = getNewDirection();
-            console.log('changing direction: '+getDirectionName(direction));
+            changeDirection();
             collision = true;
         }
 
@@ -165,8 +165,7 @@
             }
 
             if (!collision) {
-                direction = getNewDirection();
-                console.log('changing direction: '+getDirectionName(direction));
+                changeDirection();
             }
         }
 
@@ -178,6 +177,14 @@
         setPosition(coords.top, coords.left);
 
         return coords;
+    }
+
+    function changeDirection() {
+        if (!directionChangeDisabled) {
+            direction = getNewDirection();
+            directionChangeDisabled = true;
+            console.log('changing direction: '+getDirectionName(direction));
+        }
     }
 
     function changeLogoColorToRandom() {
@@ -196,6 +203,10 @@
         setInterval(() => {
             move();
         }, interval);
+
+        setInterval(() => {
+            directionChangeDisabled = false;
+        }, 2000);
     }
 
     document.addEventListener("DOMContentLoaded", init);
