@@ -4,8 +4,8 @@
     const logoSVG = document.getElementById('logo-svg');
     const elWidth = 200;
     const elHeight = 200;
-    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
-    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
     const interval = 150;
     const unit = "px";
     const DIRECTIONS = {
@@ -14,39 +14,45 @@
         "DOWN_RIGHT": 2,
         "DOWN_LEFT": 3
     };
+    const collisions = {};
     let direction = getRandomDirection();
-    let directionChangeDisabled = false;
 
-    /**
-     * The logo should move in a random direction of
-     * these possibilities and continue in that direction
-     * until a collision is hit.
-     * 1. Up left
-     * 2. Up right
-     * 3. Down right
-     * 4. Down left
-     * @returns coords
-     */
-    function getNewCoords() {
-        // Left and top are an empty string initially :)
-        let curLeft = el.style.left || 0;
-        let curTop = el.style.top || 0;
-        let leftStr = curLeft.toString();
-        let topStr = curTop.toString();
+    function addCollision(direction) {
+        collisions[direction] = true;
+    }
 
-        // Get top and left values without unit
-        if (leftStr.indexOf(unit) !== -1) {
-            curLeft = parseInt(leftStr.split(unit)[0], 10);
+    function hasCollided(direction) {
+        return typeof collisions[direction] === true;
+    }
+
+    function removeCollision(direction) {
+        collisions[direction] = false;
+    }
+
+    function getOppositeDirection(direction) {
+        switch (direction) {
+            case DIRECTIONS.UP_LEFT:
+                return DIRECTIONS.DOWN_RIGHT;
+            case DIRECTIONS.UP_RIGHT:
+                return DIRECTIONS.DOWN_LEFT;
+            case DIRECTIONS.DOWN_LEFT:
+                return DIRECTIONS.UP_RIGHT;
+            case DIRECTIONS.DOWN_RIGHT:
+                return DIRECTIONS.UP_LEFT;
+        }
+    }
+
+    function getValueFromWithUnit(value) {
+        let parsedValue = value;
+
+        if (parsedValue) {
+            if (parsedValue.indexOf(unit) !== -1) {
+                parsedValue = value.split(unit)[0];
+            }
+            parsedValue = parseInt(parsedValue, 10);
         }
 
-        if (topStr.indexOf(unit) !== -1) {
-            curTop = parseInt(topStr.split(unit)[0], 10);
-        }
-
-        return {
-            left: curLeft,
-            top: curTop
-        };
+        return parsedValue;
     }
 
     function getDistance(direction) {
@@ -106,17 +112,72 @@
         return directions[~~(Math.random() * directions.length)];
     }
 
-    function getNewDirection() {
-        switch (direction) {
-            case DIRECTIONS.UP_LEFT:
-                return randomChoice([DIRECTIONS.DOWN_RIGHT, DIRECTIONS.DOWN_LEFT]);
-            case DIRECTIONS.DOWN_LEFT:
-                return randomChoice([DIRECTIONS.UP_RIGHT, DIRECTIONS.UP_LEFT]);
-            case DIRECTIONS.DOWN_RIGHT:
-                return randomChoice([DIRECTIONS.UP_LEFT, DIRECTIONS.UP_RIGHT]);
-            case DIRECTIONS.UP_RIGHT:
-                return randomChoice([DIRECTIONS.DOWN_LEFT, DIRECTIONS.DOWN_RIGHT]);
+    /**
+     * Choose direction based on how close the logo is
+     * to the edge of the screen. For example, if the logo
+     * is near the top then we should choose down right or
+     * down left
+     * 
+     */
+    function getDirectionBasedOnPosition() {
+        const left = getValueFromWithUnit(el.style.left);
+        const top = getValueFromWithUnit(el.style.top);
+        const bottom = getValueFromWithUnit(el.style.bottom);
+        const right = getValueFromWithUnit(el.style.right);
+        const buffer = 150;
+        const isNearTop = top <= buffer;
+        const isNearLeft = left <= buffer;
+        const isNearRight = left >= (vw - buffer);
+        const isNearBottom = top >= (vh + buffer);
+
+        let logMsg = "Near ";
+        if (isNearTop) {
+            logMsg += "top";
+        } else if (isNearBottom) {
+            logMsg += "bottom";
+        } else if (isNearLeft) {
+            logMsg += "left";
+        } else if (isNearRight) {
+            logMsg += "right";
         }
+        console.log(logMsg);
+
+        if (isNearTop && !isNearLeft) {
+            return DIRECTIONS.DOWN_RIGHT;
+        }
+
+        if (isNearTop && isNearLeft) {
+            return DIRECTIONS.DOWN_RIGHT;
+        }
+
+        if (isNearBottom && !isNearLeft) {
+            return DIRECTIONS.UP_RIGHT;
+        }
+
+        if (isNearLeft && isNearBottom) {
+            return DIRECTIONS.UP_RIGHT;
+        }
+
+        if (isNearRight && isNearBottom) {
+            return DIRECTIONS.UP_LEFT;
+        }
+
+        if (isNearLeft && !isNearTop) {
+            return DIRECTIONS.UP_RIGHT;
+        }
+
+        if (isNearRight && !isNearTop) {
+            return DIRECTIONS.UP_LEFT;
+        }
+
+        if (isNearRight && isNearTop) {
+            return DIRECTIONS.DOWN_LEFT;
+        }
+
+        return getRandomDirection();
+
+        console.log('Unknown direction detected');
+        debugger;
     }
 
     function getDirectionName(direction) {
@@ -134,14 +195,19 @@
         return `hsla(${~~(360 * Math.random())}, 70%,  72%, 0.8)`;
     }
 
-    function move() {
-        let collision = false;
-        const fallback = 50;
-        const coords = getNewCoords();
-        const willCollide = isCollision(coords?.left, coords?.top);
+    function move(elLeft, elTop) {
+        const fallback = 150;
+        const coords = {
+            left: getValueFromWithUnit(elLeft),
+            top: getValueFromWithUnit(elTop)
+        };
+        const distance = getDistance(direction);
+        coords.left += distance.left;
+        coords.top += distance.top;
+
+        const willCollide = isCollision(coords.left, coords.top);
 
         if (willCollide.top) {
-            changeLogoColorToRandom();
             console.log('Y collision');
             
             if (coords.top <= 0) {
@@ -149,13 +215,9 @@
             } else {
                 coords.top -= fallback;
             }
-
-            changeDirection();
-            collision = true;
         }
 
         if (willCollide.left) {
-            changeLogoColorToRandom();
             console.log('X collision');
             
             if (coords.left <= 0) {
@@ -163,28 +225,28 @@
             } else {
                 coords.left -= fallback;
             }
-
-            if (!collision) {
-                changeDirection();
-            }
         }
 
-        // Need to have this here to keep movement smooth
-        const distance = getDistance(direction);
-        coords.left += distance.left;
-        coords.top += distance.top;
+        if (willCollide.top || willCollide.left) {
+            addCollision(direction);
+            console.log(collisions);
+
+            if (hasCollided(direction)) {
+                direction = getOppositeDirection(direction);
+                removeCollision(direction);
+                console.log("changed direction to "+direction);
+            } else {
+                changeDirection();
+            }
+            changeLogoColorToRandom();
+        }
 
         setPosition(coords.top, coords.left);
-
-        return coords;
     }
 
     function changeDirection() {
-        if (!directionChangeDisabled) {
-            direction = getNewDirection();
-            directionChangeDisabled = true;
-            console.log('changing direction: '+getDirectionName(direction));
-        }
+        direction = getDirectionBasedOnPosition();
+        console.log('changing direction: '+getDirectionName(direction));
     }
 
     function changeLogoColorToRandom() {
@@ -201,12 +263,8 @@
      */
     function init() {
         setInterval(() => {
-            move();
+            move((el.style.left || 0).toString(), (el.style.top || 0).toString());
         }, interval);
-
-        setInterval(() => {
-            directionChangeDisabled = false;
-        }, 2000);
     }
 
     document.addEventListener("DOMContentLoaded", init);
