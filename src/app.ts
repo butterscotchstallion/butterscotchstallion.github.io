@@ -18,9 +18,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     function animate() {
         update();
         draw();
-        if (~~(Math.random() * 80) == 1) {
-            changeColor();
-        }
         requestAnimationFrame(animate);
     }
 

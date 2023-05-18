@@ -4,7 +4,7 @@ export default async function BouncyLogo(canvas: any) {
     const randomDirection = Math.random() < 0.5 ? -1 : 1;
     const width = 210;
     const height = 180;
-    const speed = 3;
+    let speed = 3;
     let x = (canvas.width - 20) / 2;
     let y = (canvas.height - 20) / 2;
     let directionX = randomDirection;
@@ -16,11 +16,19 @@ export default async function BouncyLogo(canvas: any) {
         x + speed * directionX,
         y + speed * directionY,
       ];
+      const isOutOfBoundsX = x <= 0 || x + width >= canvas.width;
+      const isOutOfBoundsY = y <= 0 || y + height >= canvas.height;
+
+      if (isOutOfBoundsX || isOutOfBoundsY) {
+        speed++;
+        changeColor();
+      }
+
       [directionX, directionY] = [
-        x <= 0 || x + width >= canvas.width
+        isOutOfBoundsX
           ? -directionX
           : directionX,
-        y <= 0 || y + height >= canvas.height
+        isOutOfBoundsY
           ? -directionY
           : directionY,
       ];
