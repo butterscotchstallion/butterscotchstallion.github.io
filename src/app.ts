@@ -1,4 +1,5 @@
 import BouncyLogo from "./components/bouncy-logo";
+import { debounce } from "lodash";
 
 window.addEventListener("DOMContentLoaded", async () => {
     // Object.assign will not accept HTMLCanvasElement :(
@@ -7,12 +8,25 @@ window.addEventListener("DOMContentLoaded", async () => {
         width: window.innerWidth,
         height: window.innerHeight,
     });
-    const { update, draw } = await BouncyLogo(canvas);
+    const { update, draw, changeColor } = await BouncyLogo(canvas);
     
+    function setCanvasDimensions() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
     function animate() {
         update();
         draw();
+        if (~~(Math.random() * 80) == 1) {
+            changeColor();
+        }
         requestAnimationFrame(animate);
     }
+
     animate();
+
+    window.addEventListener('resize', debounce(() => {
+        setCanvasDimensions();
+    }, 1000))
 });
