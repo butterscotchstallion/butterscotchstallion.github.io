@@ -1,4 +1,3 @@
-import { Canvg } from "canvg";
 import BouncyLogo from "./components/bouncy-logo";
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -8,9 +7,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         width: window.innerWidth,
         height: window.innerHeight,
     });
-    const { update, ctx, draw } = await BouncyLogo(canvas);
-    const v = await Canvg.from(ctx, 'images/logo.svg');
-    v.start();
+    const { update, draw } = await BouncyLogo(canvas);
     
     function animate() {
         update();
