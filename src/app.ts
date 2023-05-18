@@ -8,7 +8,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         width: window.innerWidth,
         height: window.innerHeight,
     });
-    const { update, draw, changeColor } = await BouncyLogo(canvas);
+    const { update, draw } = await BouncyLogo(canvas);
     
     function setCanvasDimensions() {
         canvas.width = window.innerWidth;

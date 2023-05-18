@@ -20,7 +20,6 @@ export default async function BouncyLogo(canvas: any) {
       const isOutOfBoundsY = y <= 0 || y + height >= canvas.height;
 
       if (isOutOfBoundsX || isOutOfBoundsY) {
-        speed++;
         changeColor();
       }
 
