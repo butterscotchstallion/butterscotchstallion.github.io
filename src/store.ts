@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { numBouncesSlice } from './components/info-box/info-box-slice';
+import { numBouncesSlice } from './components/info-box/num-bounces-slice';
 
 export const store = configureStore({
   reducer: {
