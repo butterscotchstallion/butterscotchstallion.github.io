@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import './info-box.scss';
 
-export default function InfoBox({ onBounce }: any) {
-  const [numBounces, setNumBounces] = useState<number>(0);
+export default function InfoBox({}: any) {
+  const [numBounces] = useState<number>(0);
 
   useEffect(() => {});
 

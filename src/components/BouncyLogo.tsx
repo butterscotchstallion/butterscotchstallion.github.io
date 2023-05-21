@@ -1,5 +1,5 @@
 import { debounce } from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 const useCanvas = (callback: Function) => {
   const canvasRef = useRef(null);
