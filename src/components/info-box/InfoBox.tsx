@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
-import './info-box.scss';
-import { useSelector, useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import './info-box.scss';
 
 export default function InfoBox({}: any) {
   const numBounces = useSelector((state: RootState) => state.numBounces.value);
-  
 
   useEffect(() => {});
 
