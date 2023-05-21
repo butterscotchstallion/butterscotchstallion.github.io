@@ -25,7 +25,7 @@ export default function BouncyLogo() {
   const logoHeight = 180;
   const canvasWidth = window.innerWidth;
   const canvasHeight = window.innerHeight;
-  let speed = 3;
+  let speed = 1;
   let x = (canvasWidth - 20) / 2;
   let y = (canvasHeight - 20) / 2;
   let directionX = randomDirection;

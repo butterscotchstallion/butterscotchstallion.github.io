@@ -1,12 +1,11 @@
-import { useEffect } from 'react';
-import BouncyLogo from './components/bouncy-logo';
+import BouncyLogo from './components/BouncyLogo';
+import InfoBox from './components/info-box/InfoBox';
 
 export default function App() {
-  useEffect(() => {}, []);
-
   return (
     <>
       <BouncyLogo />
+      <InfoBox />
     </>
   );
 }
