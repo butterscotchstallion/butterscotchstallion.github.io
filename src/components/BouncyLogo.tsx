@@ -1,5 +1,7 @@
 import { debounce } from 'lodash';
 import { useEffect, useRef } from 'react';
+import { increment } from './info-box/info-box-slice';
+import { useDispatch } from 'react-redux';
 
 const useCanvas = (callback: Function) => {
   const canvasRef = useRef(null);
@@ -25,7 +27,8 @@ export default function BouncyLogo() {
   const logoHeight = 180;
   const canvasWidth = window.innerWidth;
   const canvasHeight = window.innerHeight;
-  let speed = 1;
+  const dispatch = useDispatch();
+  let speed = 3;
   let x = (canvasWidth - 20) / 2;
   let y = (canvasHeight - 20) / 2;
   let directionX = randomDirection;
@@ -76,6 +79,7 @@ export default function BouncyLogo() {
 
     if (isOutOfBoundsX || isOutOfBoundsY) {
       changeColor();
+      dispatch(increment());
     }
 
     [directionX, directionY] = [
