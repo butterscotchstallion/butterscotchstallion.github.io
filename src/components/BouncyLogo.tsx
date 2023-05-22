@@ -35,11 +35,9 @@ export default function BouncyLogo() {
   let directionY = randomDirection;
   let color = '#fff';
 
-  const resizeListener = () => {
-    return debounce(() => {
-      setCanvasDimensions();
-    }, 1000);
-  };
+  const resizeListener = debounce(() => {
+    setCanvasDimensions();
+  }, 1000);
 
   useEffect(() => {
     console.log('initializing bouncy logo!');
@@ -70,6 +68,9 @@ export default function BouncyLogo() {
   function setCanvasDimensions() {
     canvasObj.width = canvasWidth;
     canvasObj.height = canvasHeight;
+    console.log(
+      'set canvas dimensions to ' + [canvasWidth, canvasHeight].join('x')
+    );
   }
 
   const update = () => {
@@ -80,6 +81,10 @@ export default function BouncyLogo() {
     if (isOutOfBoundsX || isOutOfBoundsY) {
       changeColor();
       dispatch(increment());
+    }
+
+    if (isOutOfBoundsX && isOutOfBoundsY) {
+      debugger;
     }
 
     [directionX, directionY] = [
